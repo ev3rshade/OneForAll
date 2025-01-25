@@ -1,24 +1,9 @@
 // Initialize and add the map
 let map;
 
-const x = document.getElementById("demo");
-
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition);
-  } else { 
-    x.innerHTML = "Geolocation is not supported by this browser.";
-  }
-}
-
-function showPosition(position) {
-  x.innerHTML = "Latitude: " + position.coords.latitude + 
-  "<br>Longitude: " + position.coords.longitude;
-}
-
 async function initMap() {
   // The location of Uluru
-  const position = { lat: position.coords.latitude, lng: position.coords.longitude };
+  const position = { lat: -25.344, lng: 131.031 };
   // Request needed libraries.
   //@ts-ignore
   const { Map } = await google.maps.importLibrary("maps");
