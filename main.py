@@ -23,7 +23,13 @@ while True:
     user_input = input("\n")
 
     chat_completion = client.chat.completions.create(
+    
         messages=[
+            
+            {
+                "role": "system",
+                "content": "You are a gentle and helpful assistant who gives brief and short but accurate advice. You can memorize your users' prompts very well and help them with their issues. You also give resources if needed."
+            },
             {
                 "role": "user",
                 "content": user_input,
