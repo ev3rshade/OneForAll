@@ -153,6 +153,3 @@ def decrypt_vigenere(encrypted_message, key):
 
     decrypted_message_fin=''.join(decrypted_message)#joins into single string
     return (decrypted_message_fin)
-
-print(encrypt_vigenere("attacking tonight","oculorhinolaryngology"))
-print(decrypt_vigenere("ovnlqbpvt eoegtnh","oculorhinolaryngology"))
