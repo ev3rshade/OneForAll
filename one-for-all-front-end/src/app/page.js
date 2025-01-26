@@ -80,7 +80,7 @@ const ShibuyaConvenienceStoresMap = () => {
       const loadGoogleMapsScript = (apiKey) => {
         if (!document.querySelector(`script[src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap"]`)) {
           const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap&mapids=28418a35f6a4c496`;
           script.async = false;
           script.defer = true;
           document.body.appendChild(script);
