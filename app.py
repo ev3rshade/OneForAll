@@ -5,7 +5,7 @@ import os
 from groq import Groq
 
 app = Flask(__name__)
-app.secret_key = '70a79a11e1bc9715a02b5aeafeadc649a686cfe1fef6ac47dd35466575ae987f'
+app.secret_key = ''
 
 def generate_keys():
     key = ""
