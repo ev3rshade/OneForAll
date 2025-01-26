@@ -1,12 +1,16 @@
 from flask import Flask, request, jsonify, session
+from flask_cors import CORS, cross_origin
+from functools import wraps
 import random
 import cipher
 import os
 from groq import Groq
 
-app = Flask(__name__, static_folder="./one-for-all-front-end", static_url_path="/")
+app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
+
 
 def index():
     return app.send_static_file('page.js')
@@ -48,7 +52,7 @@ def authenticate_user(username, password):
     except Exception as e:
         return False, str(e)
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/login', methods=['GET'])
 def login():
     data = request.json
     username = data.get('username')
@@ -81,12 +85,10 @@ def signup():
 
     return jsonify({"message": "Account created successfully!"}), 201
 
-@app.route('/api/chatbox', methods=['POST'])
+@app.route('/chatbox', methods=['GET'])
 def chatbox():
-    if 'username' not in session:
-        return jsonify({"error": "Unauthorized"}), 401
-
     data = request.json
+    print(data)
     user_input = data.get('user_input')
 
     client = Groq(api_key=os.environ.get("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"))
@@ -100,7 +102,8 @@ def chatbox():
     )
 
     response = chat_completion.choices[0].message.content
-    return jsonify({"response": response}), 200
+
+    return jsonify({"response": response})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(ssl_context='adhoc')

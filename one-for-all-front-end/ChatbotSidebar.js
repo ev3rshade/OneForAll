@@ -1,6 +1,7 @@
 "use client"; // Ensure the file is treated as a client-side component
 
 import React, { useState } from "react";
+import axios from "axios"
 
 // Define the ChatbotSidebar component
 const ChatbotSidebar = () => {
@@ -14,36 +15,31 @@ const ChatbotSidebar = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSendMessage = () => {
+  async function handleSendMessage() {
     if (userInput.trim()) {
-      fetch('/api/chatbox', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message: userInput }),
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-          return response.json(); // Ensure JSON is parsed correctly
+      try {
+        const response = await fetch('https://127.0.0.1:5000/chatbox', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({user_input: userInput}),
         })
-        .then((data) => {
-          if (data.response) {
-            setMessages([
-              ...messages,
-              { text: userInput, sender: "user" },
-              { text: data.response, sender: "bot" },
-            ]);
-            setUserInput("");
-          } else if (data.error) {
-            console.error("Backend error:", data.error);
-          }
-        })
-        .catch((error) => {
-          console.error("Error:", error.message || error);
-        });
+
+        const jsonResponse = await response.json;
+
+        if (response.status === 201) {
+          return response.json
+        }
+
+        if (response.status === 500) {
+          console.error(jsonResponse.message)
+        }
+
+      } catch (error) {
+        alert('Error', 'Somthing went wrong');
+        console.error(error)
+      }
     }
   };
   
