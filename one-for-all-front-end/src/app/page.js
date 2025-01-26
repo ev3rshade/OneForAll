@@ -3,84 +3,199 @@
 import React, { useState, useEffect } from 'react';
 import { randomUUID } from 'crypto';
 
-import { getlocation, showLoc, errHand } from './marker';
-
-import { CheckBox } from '../../components/checkbox';
+let center = []
 
 let map;
-var markers = []
+let service;
+var shelterMarkers = []
+
+
 
 const ShibuyaConvenienceStoresMap = () => {
-  const [areMarkersVisible, setMarkersVisible] = useState(true);
-  useEffect(() => {
-    const loadGoogleMapsScript = (apiKey) => {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    };
+  const [userLocation, setUserLocation] = useState(null);
+  const [areMarkersVisible, setMarkersVisible] = useState(false);
 
-    window.initMap = () => {
-      map = new window.google.maps.Map(document.getElementById('map'), {
-        center: { lat: 35.6586, lng: 139.7454 }, // Coordinates for Shibuya, Japan
-        zoom: 15,
-      });
-
-      const convenienceStores = [
-        { lat: 35.6591, lng: 139.7008, title: '7-Eleven Shibuya' },
-        { lat: 35.6597, lng: 139.6995, title: 'FamilyMart Shibuya' },
-        { lat: 35.6603, lng: 139.7021, title: 'Lawson Shibuya' },
-        { lat: 35.6578, lng: 139.7446, title: '7-Eleven Shibuya' },
-        { lat: 35.6563, lng: 139.7457, title: 'Lawson Shibuya' },
-        { lat: 35.6580, lng: 139.7480, title: 'FamilyMart Shibuya' },
-        { lat: 35.6593, lng: 139.7430, title: '7-Eleven Shibuya' },
-      ];
-
-      convenienceStores.forEach(store => {
-        const marker = new window.google.maps.Marker({
-          position: { lat: store.lat, lng: store.lng },
-          map,
-          title: store.title,
+  function callback(results, status) {
+    if (status === google.maps.places.PlacesServiceStatus.OK) {
+      shelterMarkers.forEach(marker => marker.setMap(null));  // Remove previous markers
+      shelterMarkers = []; // Clear the previous markers
+      results.forEach((place) => {
+        const marker = new google.maps.Marker({
+          position: place.geometry.location,
+          map: map,
+          title: place.name,
         });
-        markers.push(marker)
+        shelterMarkers.push(marker); // Store the markers
       });
+    }
+  }
 
+  function getlocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showLoc, errHand);
+    } else {
+      window.alert(
+        "Geolocation is not supported by this browser."
+      )
+    }
+  }
+
+  function showLoc(pos) {
+    center = [pos.coords.latitude, pos.coords.longitude]
+    document.getElementById('head1').innerHTML = "latitude: " + center[0] + " longitude: " + center[1]
+    setUserLocation(center)
+  }
+
+  function errHand(err) {
+    switch (err.code) {
+        case err.PERMISSION_DENIED:
+            window.alert(
+                "The application doesn't have the permission" +
+                "to make use of location services"
+            )
+            break;
+        case err.POSITION_UNAVAILABLE:
+            window.alert(
+                  "The location of the device is uncertain"
+            )
+            break;
+        case err.TIMEOUT:
+            window.alert(
+                  "The request to get user location timed out"
+            )
+            break;
+        case err.UNKNOWN_ERROR:
+            window.alert(
+                "Time to fetch location information exceeded" +
+                "the maximum timeout interval"
+            )
+            break;
+    }
+  }
+
+
+  
+  useEffect(() => {
+    if (userLocation && userLocation.length === 2) {
+      const loadGoogleMapsScript = (apiKey) => {
+        if (!document.querySelector(`script[src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap"]`)) {
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+          script.async = false;
+          script.defer = true;
+          document.body.appendChild(script);
+        }
+      };
+
+
+      if(center.length == 2) {
+        window.initMap = () => {
+          map = new window.google.maps.Map(document.getElementById('map'), {
+            center: { lat: userLocation[0], lng: userLocation[1] }, // Coordinates for Shibuya, Japan
+            zoom: 15,
+          });
+
+          service = new google.maps.places.PlacesService(map);
+
+
+          shelterMarkers.forEach(store => {
+            const marker = new window.google.maps.Marker({
+              position: { lat: store.lat, lng: store.lng },
+              map,
+              title: store.title,
+            });
+            shelterMarkers.push(marker)
+          });
+
+        };
+        
+        loadGoogleMapsScript('AIzaSyC8IgCbDM5wbQoTwNGDLh4RZWk0ZKxm8hk');
+        
+     }
+    } else {
+      getlocation()
+    }
+  }, [userLocation, areMarkersVisible]);
+
+  async function nearbySearch() {
+    //@ts-ignore
+    const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary(
+      "places",
+    );
+    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+    // Restrict within the map viewport.
+    let startingPoint = new google.maps.LatLng(center[0], center[1]);
+    const request = {
+      // required parameters
+      fields: ["displayName", "location", "businessStatus"],
+      locationRestriction: {
+        center: startingPoint,
+        radius: 500,
+      },
+      // optional parameters
+      includedPrimaryTypes: ["restaurant"],
+      rankPreference: SearchNearbyRankPreference.POPULARITY,
     };
-
-    loadGoogleMapsScript('AIzaSyC8IgCbDM5wbQoTwNGDLh4RZWk0ZKxm8hk');
-  }, []);
-
-  function initialize(){
-    var mapProp = {
-        center: new google.maps.LatLng(38, -78),
-        zoom: 10,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    map = new google.maps.Map(document.getElementById('map'), mapProp);
-};
+    //@ts-ignore
+    const { places } = await Place.searchNearby(request);
+  
+    if (places.length) {
+      console.log(places);
+  
+      const { LatLngBounds } = await google.maps.importLibrary("core");
+      const bounds = new LatLngBounds();
+  
+      // Loop through and get all the results.
+      places.forEach((place) => {
+        const marker = new AdvancedMarkerElement({
+          map,
+          position: place.location,
+          title: place.displayName,
+        });
+        
+        shelterMarkers.push(marker)
+        bounds.extend(place.location);
+        console.log(place);
+      });
+      map.fitBounds(bounds);
+    } else {
+      console.log("No results");
+    }
+  }
 
   const toggleMarkers = () => {
     setMarkersVisible(prevState => {
       const newState = !prevState;
-      markers.forEach(marker => {
-        marker.setMap(newState ? map : null);  // Show or hide markers
-      });
+      if(!prevState && shelterMarkers.length === 0) {
+        nearbySearch().then(() => {
+            shelterMarkers.forEach(marker => {
+              marker.setMap(newState ? map : null);  // Show or hide markers
+            });
+          }
+        )
+      } else {
+        shelterMarkers.forEach(marker => {
+          marker.setMap(newState ? map : null);  // Show or hide markers
+        });
+      }
+
       return newState;
+      
     });
   };
 
   return (
     <div>
+      <h1 id='head1'>coords dodododo</h1>
       <label>
           <input
             type="checkbox"
             checked={areMarkersVisible}
             onChange={toggleMarkers}
           />
-          Show/Hide Markers
+          Show nearby shelters
         </label>
-      <button style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px', borderRadius: '5px' }} onClick={getlocation}></button>
+      <button style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px', borderRadius: '5px' }} onClick={console.log("hello")}></button>
       <div id="map" style={{ width: '100%', height: '500px' }}></div>
     </div>
   );
