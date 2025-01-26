@@ -23,29 +23,30 @@ const ChatbotSidebar = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({user_input: userInput}),
-        })
+          body: JSON.stringify({ user_input: userInput }),
+        });
 
-        const jsonResponse = await response.json;
+        const jsonResponse = await response.json();
 
-        if (response.status === 201) {
-          return response.json
+        if (response.ok) {
+          setMessages([
+            ...messages,
+            { text: userInput, sender: "user" },
+            { text: jsonResponse.response, sender: "bot" }
+          ]);
+        } else {
+          console.error("Error in response:", jsonResponse);
         }
-
-        if (response.status === 500) {
-          console.error(jsonResponse.message)
-        }
-
-        console.log("hello")
 
       } catch (error) {
-        alert('Error', 'Somthing went wrong');
-        console.error(error)
+        alert('Error', 'Something went wrong');
+        console.error(error);
       }
+
+      // Clear the input field after sending
+      setUserInput('');
     }
   };
-  
-  
 
   return (
     <div>
