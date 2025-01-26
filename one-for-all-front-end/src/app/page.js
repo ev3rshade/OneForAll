@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { randomUUID } from 'crypto';
 
 let center = []
@@ -9,11 +9,15 @@ let map;
 let service;
 var shelterMarkers = []
 
+let counter = 0
 
 
-const ShibuyaConvenienceStoresMap = () => {
+
+const LocalMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [areMarkersVisible, setMarkersVisible] = useState(false);
+
+  const googleMapsScriptLoaded = useRef(false);
 
   function callback(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -27,6 +31,10 @@ const ShibuyaConvenienceStoresMap = () => {
         });
         shelterMarkers.push(marker); // Store the markers
       });
+
+      if (shelterMarkers.length === 0) {
+        window.alert("no results");
+      }
     }
   }
 
@@ -76,15 +84,14 @@ const ShibuyaConvenienceStoresMap = () => {
 
   
   useEffect(() => {
-    if (userLocation && userLocation.length === 2) {
+    if (userLocation && userLocation.length === 2 && counter === 0) {
       const loadGoogleMapsScript = (apiKey) => {
-        if (!document.querySelector(`script[src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap"]`)) {
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap&mapids=28418a35f6a4c496`;
-          script.async = false;
-          script.defer = true;
-          document.body.appendChild(script);
-        }
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+        script.async = false;
+        script.defer = true;
+        document.body.appendChild(script);
+        counter++
       };
 
 
@@ -93,19 +100,20 @@ const ShibuyaConvenienceStoresMap = () => {
           map = new window.google.maps.Map(document.getElementById('map'), {
             center: { lat: userLocation[0], lng: userLocation[1] }, // Coordinates for Shibuya, Japan
             zoom: 15,
+            mapId: '28418a35f6a4c496',
           });
 
           service = new google.maps.places.PlacesService(map);
 
 
-          shelterMarkers.forEach(store => {
+          /*shelterMarkers.forEach(store => {
             const marker = new window.google.maps.Marker({
               position: { lat: store.lat, lng: store.lng },
               map,
               title: store.title,
             });
             shelterMarkers.push(marker)
-          });
+          });*/
 
         };
         
@@ -119,6 +127,7 @@ const ShibuyaConvenienceStoresMap = () => {
 
   async function nearbySearch() {
     //@ts-ignore
+    try {
     const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary(
       "places",
     );
@@ -130,30 +139,32 @@ const ShibuyaConvenienceStoresMap = () => {
       fields: ["displayName", "location", "businessStatus"],
       locationRestriction: {
         center: startingPoint,
-        radius: 500,
+        radius: 1000,
       },
       // optional parameters
       includedPrimaryTypes: ["restaurant"],
+      maxResultCount: 5,
       rankPreference: SearchNearbyRankPreference.POPULARITY,
     };
     //@ts-ignore
-    const { places } = await Place.searchNearby(request);
-  
+    const { places } = await Place.searchNearby(request)
     if (places.length) {
       console.log(places);
   
       const { LatLngBounds } = await google.maps.importLibrary("core");
       const bounds = new LatLngBounds();
+      shelterMarkers = []
   
       // Loop through and get all the results.
       places.forEach((place) => {
-        const marker = new AdvancedMarkerElement({
+        const markerView = new AdvancedMarkerElement({
           map,
           position: place.location,
           title: place.displayName,
         });
-        
-        shelterMarkers.push(marker)
+
+        shelterMarkers.push(markerView)
+  
         bounds.extend(place.location);
         console.log(place);
       });
@@ -161,10 +172,15 @@ const ShibuyaConvenienceStoresMap = () => {
     } else {
       console.log("No results");
     }
+  
+  } catch (error) {
+    window.alert(JSON.stringify(error));
   }
+}
 
   const toggleMarkers = () => {
     setMarkersVisible(prevState => {
+      console.log(prevState)
       const newState = !prevState;
       if(!prevState && shelterMarkers.length === 0) {
         nearbySearch().then(() => {
@@ -175,7 +191,7 @@ const ShibuyaConvenienceStoresMap = () => {
         )
       } else {
         shelterMarkers.forEach(marker => {
-          marker.setMap(newState ? map : null);  // Show or hide markers
+          marker.setMap(null);
         });
       }
 
@@ -195,10 +211,9 @@ const ShibuyaConvenienceStoresMap = () => {
           />
           Show nearby shelters
         </label>
-      <button style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px', borderRadius: '5px' }} onClick={console.log("hello")}></button>
       <div id="map" style={{ width: '100%', height: '500px' }}></div>
     </div>
   );
 };
 
-export default ShibuyaConvenienceStoresMap;
+export default LocalMap;
