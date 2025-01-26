@@ -16,6 +16,7 @@ const ChatbotSidebar = () => {
 
   const handleSendMessage = () => {
     if (userInput.trim()) {
+      
       setMessages([
         ...messages,
         { text: userInput, sender: "user" },
