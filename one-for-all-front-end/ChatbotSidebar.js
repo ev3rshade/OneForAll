@@ -1,7 +1,6 @@
 "use client"; // Ensure the file is treated as a client-side component
 
 import React, { useState } from "react";
-import axios from "axios"
 
 // Define the ChatbotSidebar component
 const ChatbotSidebar = () => {
