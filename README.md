@@ -1,7 +1,7 @@
 ## Authors
-Linh Dang - DangNhatLinh\n
-Hanako Keney - ev3rshade\n
-Fiona Ruan - ruan-f\n
+Linh Dang - DangNhatLinh
+Hanako Keney - ev3rshade
+Fiona Ruan - ruan-f
 Lucy Xu - lucy-x
 
 Our project for InnovateHer Hackathon 2025
