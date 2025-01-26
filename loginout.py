@@ -29,41 +29,43 @@ def signup():
     
 
 def login():
+    stored_username = []
+    stored_password = []
+    stored_key = []
+    key = ""
+    decrypted_password = ""
+    index = -1
+
     username = input("Username: ")
     password = input("Password: ")
 
-    stored_username = ""
-    stored_password = ""
-    stored_key = ""
-    key = ""
-    decrypted_password = ""
-    index = 0
-
     with open("username.txt", "r") as f:
         for line in f:
-            stored_username = line.strip().split(",")
-    
-    for i in range(len(stored_username)):
-        if stored_username == username:
-            index = i
-        else:
-            print("Invalid username or password!")
+            stored_username = line.replace(" ", "").strip().split(",")
 
     with open("keys.txt", "r") as f:
         for line in f:
-            stored_key = line.strip().split(",")
+            stored_key = line.replace(" ", "").strip().split(",")
 
     with open("passwords.txt", "r") as f:
         for line in f:
-            stored_password = line.strip().split(",")
+            stored_password = line.replace(" ", "").strip().split(",")
+
+    for i in range(len(stored_username)):
+        if stored_username[i] == username:
+            index = i 
+    if index < 0:
+        print("Invalid username or password!")
+        return
     
     key = stored_key[index]
     decrypted_password = cipher.decrypt_vigenere(stored_password[index], key)
 
-    if stored_password == decrypted_password:
+    if password == decrypted_password:
         print("logged in successfully")
     else:
         print("Invalid username or password!")
+        return
 
 while True:
     choice = input("1. Sign up\n2. Login\n3. Exit\n")
