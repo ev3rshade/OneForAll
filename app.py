@@ -11,81 +11,7 @@ CORS(app)
 
 @app.route('/')
 
-
-def index():
-    return app.send_static_file('page.js')
-
-
-app.secret_key = ''
-
-def generate_keys():
-    key = ""
-    for _ in range(random.randint(4, 6)):
-        key += chr(random.randint(97, 122))
-    with open("keys.txt", "a") as f:
-        f.write(key + ", ")
-    return key
-
-
-def authenticate_user(username, password):
-    try:
-        with open("username.txt", "r") as f:
-            stored_usernames = f.read().strip().split(", ")
-
-        if username not in stored_usernames:
-            return False, "Invalid username or password!"
-
-        index = stored_usernames.index(username)
-
-        with open("keys.txt", "r") as f:
-            stored_keys = f.read().strip().split(", ")
-
-        with open("passwords.txt", "r") as f:
-            stored_passwords = f.read().strip().split(", ")
-
-        decrypted_password = cipher.decrypt_vigenere(stored_passwords[index], stored_keys[index])
-
-        if password == decrypted_password:
-            return True, ""
-        else:
-            return False, "Invalid username or password!"
-    except Exception as e:
-        return False, str(e)
-
-@app.route('/api/login', methods=['GET'])
-def login():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-
-    success, message = authenticate_user(username, password)
-    if success:
-        session['username'] = username
-        return jsonify({"message": "Logged in successfully!"}), 200
-    else:
-        return jsonify({"error": message}), 401
-
-@app.route('/api/signup', methods=['POST'])
-def signup():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    confirm_password = data.get('confirm_password')
-
-    if password != confirm_password:
-        return jsonify({"error": "Passwords don't match!"}), 400
-
-    with open("username.txt", "a") as f:
-        f.write(username + ", ")
-
-    key = generate_keys()
-
-    with open("passwords.txt", "a") as p:
-        p.write(cipher.encrypt_vigenere(password, key) + ", ")
-
-    return jsonify({"message": "Account created successfully!"}), 201
-
-@app.route('/chatbox', methods=['GET'])
+@app.route('/chatbox', methods=['GET','POST'])
 def chatbox():
     data = request.json
     print(data)
@@ -106,4 +32,4 @@ def chatbox():
     return jsonify({"response": response})
 
 if __name__ == '__main__':
-    app.run(ssl_context='adhoc')
+    app.run(ssl_context='adhoc', host='0.0.0.0', port=5000)

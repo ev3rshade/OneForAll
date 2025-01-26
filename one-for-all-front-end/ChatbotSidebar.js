@@ -18,7 +18,7 @@ const ChatbotSidebar = () => {
   async function handleSendMessage() {
     if (userInput.trim()) {
       try {
-        const response = await fetch('https://127.0.0.1:5000/chatbox', {
+        const response = await fetch('https://10.44.64.240:5000/chatbox', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -35,6 +35,8 @@ const ChatbotSidebar = () => {
         if (response.status === 500) {
           console.error(jsonResponse.message)
         }
+
+        console.log("hello")
 
       } catch (error) {
         alert('Error', 'Somthing went wrong');
