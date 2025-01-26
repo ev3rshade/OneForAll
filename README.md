@@ -1,3 +1,11 @@
+## Authors
+Linh Dang - DangNhatLinh
+Hanako Keney - ev3rshade
+Fiona Ruan - ruan-f
+Lucy Xu - lucy-x
+
+Our project for InnovateHer Hackathon 2025
+
 ## Inspiration
 
 Being raised in Vietnam, one of our members has witnessed multiple cases of generational trauma as the result of the continuous war in her country in the past. Hence, it is not uncommon to spot an abusive household that inflicts physical or psychological trauma on the child. Having noticed this, this team aimed to focus this project on the idea of providing support for women who have been taken advantage of and are in need of immediate help.
