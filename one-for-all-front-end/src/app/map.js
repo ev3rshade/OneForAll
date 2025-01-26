@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import Image from "next/image";
-import Link from 'next/link';
-
-=======
 'use client'
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { randomUUID } from 'crypto';
 
 let center = []
@@ -14,11 +9,15 @@ let map;
 let service;
 var shelterMarkers = []
 
+let counter = 0
 
 
-const ShibuyaConvenienceStoresMap = () => {
+
+const LocalMap = () => {
   const [userLocation, setUserLocation] = useState(null);
   const [areMarkersVisible, setMarkersVisible] = useState(false);
+
+  const googleMapsScriptLoaded = useRef(false);
 
   function callback(results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -32,6 +31,10 @@ const ShibuyaConvenienceStoresMap = () => {
         });
         shelterMarkers.push(marker); // Store the markers
       });
+
+      if (shelterMarkers.length === 0) {
+        window.alert("no results");
+      }
     }
   }
 
@@ -81,15 +84,14 @@ const ShibuyaConvenienceStoresMap = () => {
 
   
   useEffect(() => {
-    if (userLocation && userLocation.length === 2) {
+    if (userLocation && userLocation.length === 2 && counter === 0) {
       const loadGoogleMapsScript = (apiKey) => {
-        if (!document.querySelector(`script[src="https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap"]`)) {
-          const script = document.createElement('script');
-          script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap&mapids=28418a35f6a4c496`;
-          script.async = false;
-          script.defer = true;
-          document.body.appendChild(script);
-        }
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initMap`;
+        script.async = false;
+        script.defer = true;
+        document.body.appendChild(script);
+        counter++
       };
 
 
@@ -98,19 +100,20 @@ const ShibuyaConvenienceStoresMap = () => {
           map = new window.google.maps.Map(document.getElementById('map'), {
             center: { lat: userLocation[0], lng: userLocation[1] }, // Coordinates for Shibuya, Japan
             zoom: 15,
+            mapId: '28418a35f6a4c496',
           });
 
           service = new google.maps.places.PlacesService(map);
 
 
-          shelterMarkers.forEach(store => {
+          /*shelterMarkers.forEach(store => {
             const marker = new window.google.maps.Marker({
               position: { lat: store.lat, lng: store.lng },
               map,
               title: store.title,
             });
             shelterMarkers.push(marker)
-          });
+          });*/
 
         };
         
@@ -124,6 +127,7 @@ const ShibuyaConvenienceStoresMap = () => {
 
   async function nearbySearch() {
     //@ts-ignore
+    try {
     const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary(
       "places",
     );
@@ -135,30 +139,32 @@ const ShibuyaConvenienceStoresMap = () => {
       fields: ["displayName", "location", "businessStatus"],
       locationRestriction: {
         center: startingPoint,
-        radius: 500,
+        radius: 1000,
       },
       // optional parameters
       includedPrimaryTypes: ["restaurant"],
+      maxResultCount: 5,
       rankPreference: SearchNearbyRankPreference.POPULARITY,
     };
     //@ts-ignore
-    const { places } = await Place.searchNearby(request);
-  
+    const { places } = await Place.searchNearby(request)
     if (places.length) {
       console.log(places);
   
       const { LatLngBounds } = await google.maps.importLibrary("core");
       const bounds = new LatLngBounds();
+      shelterMarkers = []
   
       // Loop through and get all the results.
       places.forEach((place) => {
-        const marker = new AdvancedMarkerElement({
+        const markerView = new AdvancedMarkerElement({
           map,
           position: place.location,
           title: place.displayName,
         });
-        
-        shelterMarkers.push(marker)
+
+        shelterMarkers.push(markerView)
+  
         bounds.extend(place.location);
         console.log(place);
       });
@@ -166,10 +172,15 @@ const ShibuyaConvenienceStoresMap = () => {
     } else {
       console.log("No results");
     }
+  
+  } catch (error) {
+    window.alert(JSON.stringify(error));
   }
+}
 
   const toggleMarkers = () => {
     setMarkersVisible(prevState => {
+      console.log(prevState)
       const newState = !prevState;
       if(!prevState && shelterMarkers.length === 0) {
         nearbySearch().then(() => {
@@ -180,7 +191,7 @@ const ShibuyaConvenienceStoresMap = () => {
         )
       } else {
         shelterMarkers.forEach(marker => {
-          marker.setMap(newState ? map : null);  // Show or hide markers
+          marker.setMap(null);
         });
       }
 
@@ -188,125 +199,8 @@ const ShibuyaConvenienceStoresMap = () => {
       
     });
   };
->>>>>>> b509017867c6b6f219346980a386b41d1c51e44b
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)]">
-      {/* Navigation Menu */}
-      <nav className="absolute top-0 left-0 right-0 p-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white flex justify-between items-center shadow-lg z-10">
-        <div className="text-xl font-bold">Home</div>
-        <div className="flex gap-6 items-center">
-        <Link href="/" className="font-bold">
-          Home
-        </Link>
-        <Link href="/ResourceHub" className="hover:font-bold">
-          Resource Hub
-        </Link>
-        <Link href="/DocumentVault" className="hover:font-bold">
-          Document Vault
-        </Link>
-        <Link href="/LegalAdvocacy" className="hover:font-bold">
-          Legal Advocacy
-        </Link>
-        <Link href="/ReflectionTools" className="hover:font-bold">
-          Reflection Tools
-        </Link>
-        <Link href="/EmergencyAndCrisis" className="hover:font-bold">
-          Emergency and Crisis
-        </Link>
-        <Link href="/login" className="">
-        <Image
-          className="dark:invert"
-          src="/iconLogin.png"
-          alt="Next.js logo"
-          width={50}
-          height={8}
-          priority
-        />
-        </Link>
-        </div>
-      </nav>
-    
-    <main className="flex flex-col gap-0 row-start-2 items-center mt-40">
-      <main className="flex flex-col gap-2 row-start-4 items-center">
-        <Image
-          className="dark:invert"
-          src="/womenFinal.png"
-          alt="Next.js logo"
-          width={350}
-          height={350}
-          priority
-        />        
-      </main>
-
-
-      <main className="bg-gray-50 min-h-screen px-4 py-12 flex flex-col items-center">
-        {/* Hero Section */}
-        <section className="text-center max-w-4xl">
-          <h1 className="text-5xl font-bold text-pink-600 mb-4">
-            You Are Not Alone
-          </h1>
-          <p className="text-gray-700 text-lg mb-6">
-            We provide a safe space, resources, and guidance for women in abusive households. 
-            No matter where you are in your journey, we’re here to help you take the next step.
-          </p>
-          <Link href="/EmergencyAndCrisis">
-            <button className="bg-pink-600 text-white py-3 px-6 rounded-lg shadow hover:bg-pink-700 transition-all">
-              Get Immediate Help
-            </button>
-          </Link>
-        </section>
-
-      {/* Resources Section */}
-      <section className="mt-16 max-w-5xl w-full">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          Explore Our Support Tools
-        </h2>
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:border hover:border-pink-500">
-            <h3 className="text-xl font-semibold text-pink-600 mb-4">Legal Advocacy</h3>
-            <p className="text-gray-600 mb-4">
-              Learn about your legal rights, access legal assistance, and take steps to ensure your safety.
-            </p>
-            <Link href="/LegalAdvocacy" className="text-pink-500 hover:underline">
-              Learn More
-            </Link>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:border hover:border-pink-500">
-            <h3 className="text-xl font-semibold text-pink-600 mb-4">Emergency Contacts</h3>
-            <p className="text-gray-600 mb-4">
-              Access 24/7 hotlines, shelters, and resources to find immediate support.
-            </p>
-            <Link href="/EmergencyAndCrisis" className="text-pink-500 hover:underline">
-              View Resources
-            </Link>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all hover:border hover:border-pink-500">
-            <h3 className="text-xl font-semibold text-pink-600 mb-4">Reflection Tools</h3>
-            <p className="text-gray-600 mb-4">
-              Empower yourself by exploring self-reflection exercises to identify and process your situation.
-            </p>
-            <Link href="/ReflectionTools" className="text-pink-500 hover:underline">
-              Explore Tools
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Inspirational Quote */}
-      <section className="mt-16 text-center max-w-4xl">
-        <blockquote className="text-xl italic text-gray-700">
-          “The strongest people are not those who show strength in front of us, but those who win battles we know nothing about.”
-        </blockquote>
-        <p className="mt-4 text-pink-600 font-bold">– Anonymous</p>
-      </section>
-      </main>
-    </main>
-    </div>
-  );
-}
-=======
     <div>
       <h1 id='head1'>coords dodododo</h1>
       <label>
@@ -320,8 +214,7 @@ const ShibuyaConvenienceStoresMap = () => {
       <button style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px', borderRadius: '5px' }} onClick={console.log("hello")}></button>
       <div id="map" style={{ width: '100%', height: '500px' }}></div>
     </div>
-  );
-};
+  )
+}
 
-export default ShibuyaConvenienceStoresMap;
->>>>>>> b509017867c6b6f219346980a386b41d1c51e44b
+export default LocalMap
