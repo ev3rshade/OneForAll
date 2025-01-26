@@ -112,7 +112,7 @@ export default function LegalAdvocacy() {
             </div>
             <button
               type="submit"
-              className="w-full py-3 px-6 text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors duration-300"
+              className="w-full py-3 px-6 text-white bg-pink-500 hover:bg-pink-600 rounded-md transition-colors duration-300"
             >
               Send Message
             </button>

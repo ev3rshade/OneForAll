@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ChatbotSidebar from "/ChatbotSidebar"; // Make sure the import is correct
+import ChatbotSidebar from "/ChatbotSidebar"; // Make sure this path is correct for your project structure
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,11 +20,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* Correct favicon path */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        <ChatbotSidebar /> {/* The sidebar should be here */}
+        <ChatbotSidebar /> {/* Keeping this as is */}
       </body>
     </html>
   );

@@ -77,6 +77,7 @@ const ChatbotSidebar = () => {
             backgroundColor: "white", // Background color for the sidebar
             border: "1px solid #ccc", // Border for the sidebar
             padding: "10px", // Padding inside the sidebar
+            paddingTop: "20px",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)", // Shadow effect for 3D look
             zIndex: 1000, // Ensure it stays on top of other elements
             borderRadius: "8px", // Rounded corners
