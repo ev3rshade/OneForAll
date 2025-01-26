@@ -23,7 +23,12 @@ const ChatbotSidebar = () => {
         },
         body: JSON.stringify({ message: userInput }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json(); // Ensure JSON is parsed correctly
+        })
         .then((data) => {
           if (data.response) {
             setMessages([
@@ -32,13 +37,17 @@ const ChatbotSidebar = () => {
               { text: data.response, sender: "bot" },
             ]);
             setUserInput("");
+          } else if (data.error) {
+            console.error("Backend error:", data.error);
           }
         })
         .catch((error) => {
-          console.error("Error:", error);
+          console.error("Error:", error.message || error);
         });
     }
   };
+  
+  
 
   return (
     <div>
@@ -87,13 +96,12 @@ const ChatbotSidebar = () => {
               overflowY: "auto", // Enable scrolling if content overflows
               backgroundColor: "#f9f9f9", // Chatbox background color
               borderRadius: "8px", // Rounded corners for chat content area
-              paddingTop: "30px",
               padding: "10px", // Padding inside chat area
               boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Shadow effect for content area
               marginBottom: "10px", // Margin between chat and input box
             }}
           >
-            <h2 style={{ textAlign: "center", marginBottom: "10px", position: "fixed" }}>Chatbot</h2>
+            <h2 style={{ textAlign: "center", marginBottom: "10px" }}>Chatbot</h2>
             <div
               style={{
                 display: "flex",
@@ -126,21 +134,19 @@ const ChatbotSidebar = () => {
               marginTop: "auto", // Push input to the bottom of the chatbox
             }}
           >
-            <form action="/api/chatbox" method="POST">
-              <input
-                type="text"
-                name="message_input"
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Type your message..."
-                style={{
-                  width: "100%", // Full width of the input box
-                  padding: "8px", // Padding inside input box
-                  borderRadius: "5px", // Rounded input box
-                  border: "1px solid #ccc", // Border around input box
-                }}
-              />
-              <button
+            <input
+              type="text"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              placeholder="Type your message..."
+              style={{
+                flex: 1, // Take available width
+                padding: "8px", // Padding inside input box
+                borderRadius: "5px", // Rounded input box
+                border: "1px solid #ccc", // Border around input box
+              }}
+            />
+            <button
               onClick={handleSendMessage}
               style={{
                 backgroundColor: "#EC4899", // Send button background
@@ -150,10 +156,9 @@ const ChatbotSidebar = () => {
                 borderRadius: "5px", // Rounded corners
                 cursor: "pointer", // Pointer cursor for clickable
               }}
-              >
+            >
               Send
             </button>
-            </form>
           </div>
         </div>
       )}
