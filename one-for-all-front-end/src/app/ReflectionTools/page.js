@@ -86,13 +86,13 @@ export default function ReflectionTools() {
             <div className="bg-white p-8 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:border hover:border-pink-500">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">Daily Mood Tracker</h3>
               <p className="text-gray-600">Track your mood throughout the day to help identify triggers, patterns, and progress. Recognizing small shifts in mood can help you understand your mental state better.</p>
-              <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-pink-500 transition-all duration-300">Track My Mood</button>
+              <button className="mt-6 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-all duration-300">Track My Mood</button>
             </div>
 
             <div className="bg-white p-8 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:border hover:border-pink-500">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">Weekly Reflection Journal</h3>
               <p className="text-gray-600">Reflect on your week: note what went well, challenges you faced, and areas for improvement. Reflection helps recognize your emotional progress over time.</p>
-              <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-pink-500 transition-all duration-300">Start My Journal</button>
+              <button className="mt-6 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-all duration-300">Start My Journal</button>
             </div>
           </div>
         </section>
@@ -112,13 +112,13 @@ export default function ReflectionTools() {
                 <li>Practice relaxation techniques</li>
                 <li>Engage in hobbies or activities you love</li>
               </ul>
-              <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-pink-500 transition-all duration-300">Download Self-Care Checklist</button>
+              <button className="mt-6 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-all duration-300">Download Self-Care Checklist</button>
             </div>
 
             <div className="bg-white p-8 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:border hover:border-pink-500">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4">Progress Tracker Chart</h3>
               <p className="text-gray-600">Track your mental health progress visually over time. See your growth with a chart tracking your mood, sleep quality, energy levels, and more.</p>
-              <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-pink-500 transition-all duration-300">View My Progress</button>
+              <button className="mt-6 px-6 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 transition-all duration-300">View My Progress</button>
             </div>
           </div>
         </section>

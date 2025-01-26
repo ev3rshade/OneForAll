@@ -128,10 +128,10 @@ export default function ResourceHub() {
       <nav className="absolute top-0 left-0 right-0 p-6 bg-gradient-to-r from-pink-500 to-purple-600 text-white flex justify-between items-center shadow-lg z-10">
         <div className="text-xl font-bold">Resource Hub</div>
         <div className="flex gap-6 items-center">
-          <Link href="/" className="font-bold">
+          <Link href="/" className="hover:font-bold">
             Home
           </Link>
-          <Link href="/ResourceHub" className="hover:font-bold">
+          <Link href="/ResourceHub" className="font-bold">
             Resource Hub
           </Link>
           <Link href="/DocumentVault" className="hover:font-bold">
