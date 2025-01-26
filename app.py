@@ -4,7 +4,14 @@ import cipher
 import os
 from groq import Groq
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="./one-for-all-front-end", static_url_path="/")
+
+@app.route('/')
+
+def index():
+    return app.send_static_file('page.js')
+
+
 app.secret_key = ''
 
 def generate_keys():
@@ -14,6 +21,7 @@ def generate_keys():
     with open("keys.txt", "a") as f:
         f.write(key + ", ")
     return key
+
 
 def authenticate_user(username, password):
     try:
@@ -81,7 +89,7 @@ def chatbox():
     data = request.json
     user_input = data.get('user_input')
 
-    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    client = Groq(api_key=os.environ.get("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"))
 
     chat_completion = client.chat.completions.create(
         messages=[

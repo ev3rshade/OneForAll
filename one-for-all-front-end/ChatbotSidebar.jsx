@@ -16,12 +16,27 @@ const ChatbotSidebar = () => {
 
   const handleSendMessage = () => {
     if (userInput.trim()) {
-      setMessages([
-        ...messages,
-        { text: userInput, sender: "user" },
-        { text: "This is a bot response.", sender: "bot" },
-      ]);
-      setUserInput("");
+      fetch('/api/chatbox', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: userInput }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.response) {
+            setMessages([
+              ...messages,
+              { text: userInput, sender: "user" },
+              { text: data.response, sender: "bot" },
+            ]);
+            setUserInput("");
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     }
   };
 
@@ -111,19 +126,21 @@ const ChatbotSidebar = () => {
               marginTop: "auto", // Push input to the bottom of the chatbox
             }}
           >
-            <input
-              type="text"
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Type your message..."
-              style={{
-                width: "100%", // Full width of the input box
-                padding: "8px", // Padding inside input box
-                borderRadius: "5px", // Rounded input box
-                border: "1px solid #ccc", // Border around input box
-              }}
-            />
-            <button
+            <form action="/api/chatbox" method="POST">
+              <input
+                type="text"
+                name="message_input"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                placeholder="Type your message..."
+                style={{
+                  width: "100%", // Full width of the input box
+                  padding: "8px", // Padding inside input box
+                  borderRadius: "5px", // Rounded input box
+                  border: "1px solid #ccc", // Border around input box
+                }}
+              />
+              <button
               onClick={handleSendMessage}
               style={{
                 backgroundColor: "#EC4899", // Send button background
@@ -133,9 +150,10 @@ const ChatbotSidebar = () => {
                 borderRadius: "5px", // Rounded corners
                 cursor: "pointer", // Pointer cursor for clickable
               }}
-            >
+              >
               Send
             </button>
+            </form>
           </div>
         </div>
       )}
